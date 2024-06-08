@@ -1,0 +1,76 @@
+docker container remove nwtis_hsql_dz_2c
+docker container remove nwtis_h2_dz_2c
+
+docker image remove nwtis_h2_dz_2i
+docker image remove nwtis_hsql_dz_2i
+
+docker volume remove nwtis_hsql_dz_2v
+docker volume remove nwtis_2_dz_2v
+
+docker network remove nwtis_dz_2n
+
+docker network create --subnet=20.24.5.0/24 nwtis_dz_2n
+docker network inspect nwtis_dz_2n
+docker volume create nwtis_hsql_dz_2v
+docker volume inspect nwtis_hsql_dz_2v
+sudo ls -al /var/lib/docker/volumes/nwtis_hsql_dz_2v/_data
+sudo cp -R /opt/hsqldb-2.7.2/hsqldb/data/* /var/lib/docker/volumes/nwtis_hsql_dz_2v/_data/
+
+docker build -t nwtis_hsql_dz_2i -f Dockerfile.hsql .
+
+#pokreni docker sliku kao demona ( u pozadini) u toj mreži i na tom portu
+docker run -it -d --network=nwtis_dz_2n --ip 20.24.5.3 \
+-p 9001:9001 \
+--name=nwtis_hsql_dz_2c --hostname=nwtis_hsql_dz_2c \
+--mount source=nwtis_hsql_dz_2v,target=/opt/data \
+nwtis_hsql_dz_2i:latest
+
+docker ps
+docker container stop nwtis_hsql_dz_2c
+docker container remove nwtis_hsql_dz_2c
+
+
+
+docker volume create nwtis_h2_dz_2v
+docker volume inspect nwtis_h2_dz_2v
+sudo ls -al /var/lib/docker/volumes/nwtis_h2_dz_2v/_data
+sudo cp -R /opt/database/* /var/lib/docker/volumes/nwtis_h2_dz_2v/_data/
+
+docker build -t nwtis_h2_dz_2i -f Dockerfile.h2 .
+
+docker run -it -d --network=nwtis_dz_2n --ip 20.24.5.4 \
+-p 9092:9092 \
+--name=nwtis_h2_dz_2c --hostname=nwtis_h2_dz_2c \
+--mount source=nwtis_h2_dz_2v,target=/opt/database \
+nwtis_h2_dz_2i:latest
+
+docker ps
+docker container stop nwtis_h2_dz_2c
+docker container remove nwtis_h2_dz_2c
+
+
+
+
+#STARTANJE APP CONTAINERA
+docker volume create nwtis_app_dz_2v
+docker volume inspect nwtis_app_dz_2v
+
+sudo ls -al /var/lib/docker/volumes/nwtis_app_dz_2v/_data
+sudo cp -R ./app* /var/lib/docker/volumes/nwtis_app_dz_2v/_data/
+
+docker build -t nwtis_app_dz_2i -f Dockerfile.app .
+
+docker run -it -d --network=nwtis_dz_2n --ip 20.24.5.2 \
+--name=nwtis_app_dz_2c --hostname=nwtis_app_dz_2c \
+nwtis_app_dz_2i:latest
+
+#-p 8080:8080 \
+
+
+#STARTANJE REST CONTAINERA
+docker build -t nwtis_servisi_dz_2i -f Dockerfile.servisi .
+
+docker run -it -d --network=nwtis_dz_2n --ip 20.24.5.5 \
+-p 8080:9080 \
+--name=nwtis_servisi_dz_2c --hostname=nwtis_servisi_dz_2c \
+nwtis_servisi_dz_2i:latest
