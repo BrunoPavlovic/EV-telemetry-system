@@ -1,5 +1,7 @@
 # EV-telemetry-system
 
+The system is designed to simulate driving an electric vehicle through a city. The simulation of electric vehicle driving is based on real data recorded in CSV files.
+
 ## Setting up project
 
   1. Open project from File system and load all projects in your IDE.
