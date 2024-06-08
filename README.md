@@ -9,3 +9,6 @@ The system is designed to simulate driving an electric vehicle through a city. T
   3. On parent directory run **docker-compose up -d --build** to start servers for databases, app project and REST service.
   4. Go to /opt/payara6-web/glassfish/bin and start payara server with **./startserv**
   5. In directory ev_telemetry_klijenti run command **mvn cargo:redeploy -P ServerEE-local** to install client on payara.
+
+## Technologies
+Java, Jakarta EE, Junit, Docker.
